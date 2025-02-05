@@ -12,5 +12,7 @@ router.get('/', auth, async (req, res) => {
 
     }
 });
-
+router.get('/friends', (req, res) => {
+    res.render('friends');
+});
 module.exports = router;
