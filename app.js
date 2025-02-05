@@ -3,7 +3,7 @@ const path = require('path');
 const authRouter = require('./routes/auth');
 const moviesRouter = require('./routes/movies');
 const cookieParser = require('cookie-parser');
-
+const userRouter = require('./routes/user');
 // Next initialize the application
 const app = express();
 
@@ -42,7 +42,7 @@ app.get('/admin', (req, res) => {
 
 
 app.use('/movies', moviesRouter);
-
+app.use('/user',userRouter);
 
 // Add this line with your other route uses
 

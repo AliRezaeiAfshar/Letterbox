@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پروفایل کاربر</title>
+    <!-- لود بوتسریپ به همراه نسخه RTL -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .profile-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .friends-list {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        .friend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <!-- بخش پروفایل کاربر -->
+    <div class="profile-card">
+        <h2 class="mb-3">پروفایل کاربر</h2>
+        <p><strong>نام کاربری:</strong> <span id="displayUsername">کاربرنمونه</span></p>
+        <p><strong>ایمیل:</strong> <span id="displayEmail">user@example.com</span></p>
+        <button class="btn btn-primary" onclick="openEditProfileModal()">ویرایش اطلاعات کاربری</button>
+    </div>
+
+    <!-- بخش لیست دوستان -->
+    <div class="friends-list">
+        <h2 class="mb-3">لیست دوستان</h2>
+        <!-- فرم افزودن دوست -->
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" id="newFriendUsername" placeholder="نام کاربری دوست">
+            <button class="btn btn-success" type="button" onclick="addFriend()">افزودن دوست</button>
+        </div>
+        <!-- نمایش لیست دوستان -->
+        <div id="friendsContainer">
+            <!-- نمونه یک دوست -->
+            <div class="friend-item">
+                <span>دوست1</span>
+                <button class="btn btn-danger btn-sm" onclick="deleteFriend('دوست1')">حذف</button>
+            </div>
+            <!-- دوستان دیگر به صورت داینامیک اضافه خواهند شد -->
+        </div>
+    </div>
+</div>
+
+<!-- مودال ویرایش اطلاعات کاربری -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="editProfileModalLabel" class="modal-title">ویرایش اطلاعات کاربری</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">نام کاربری</label>
+                        <input type="text" class="form-control" id="editUsername" value="کاربرنمونه">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">ایمیل</label>
+                        <input type="email" class="form-control" id="editEmail" value="user@example.com">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" onclick="saveProfileChanges()">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت‌های مربوط به بوتسریپ و عملکرد دکمه‌ها -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // باز کردن مودال ویرایش پروفایل
+    function openEditProfileModal() {
+        var editProfileModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+        editProfileModal.show();
+    }
+
+    // ذخیره تغییرات پروفایل
+    function saveProfileChanges() {
+        var newUsername = document.getElementById('editUsername').value;
+        var newEmail = document.getElementById('editEmail').value;
+        document.getElementById('displayUsername').textContent = newUsername;
+        document.getElementById('displayEmail').textContent = newEmail;
+        // در اینجا می‌توانید درخواست AJAX جهت ذخیره تغییرات به سرور ارسال کنید
+        bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+    }
+
+    // افزودن دوست به لیست
+    function addFriend() {
+        var friendUsername = document.getElementById('newFriendUsername').value.trim();
+        if (!friendUsername) {
+            alert('لطفاً نام کاربری دوست را وارد کنید.');
+            return;
+        }
+        // ایجاد یک المان جدید برای دوست افزوده شده
+        var friendItem = document.createElement('div');
+        friendItem.className = 'friend-item';
+        friendItem.innerHTML = '<span>' + friendUsername + '</span>' +
+            '<button class="btn btn-danger btn-sm" onclick="deleteFriend(\'' + friendUsername + '\')">حذف</button>';
+        document.getElementById('friendsContainer').appendChild(friendItem);
+        document.getElementById('newFriendUsername').value = '';
+        // در اینجا می‌توانید درخواست AJAX جهت افزودن دوست به سرور ارسال کنید
+    }
+
+    // حذف دوست از لیست
+    function deleteFriend(friendUsername) {
+        var friendsContainer = document.getElementById('friendsContainer');
+        var friendItems = friendsContainer.getElementsByClassName('friend-item');
+        for (var i = 0; i < friendItems.length; i++) {
+            if (friendItems[i].textContent.indexOf(friendUsername) !== -1) {
+                friendsContainer.removeChild(friendItems[i]);
+                break;
+            }
+        }
+        // در اینجا می‌توانید درخواست AJAX جهت حذف دوست از سرور ارسال کنید
+    }
+</script>
+</body>
+</html>
