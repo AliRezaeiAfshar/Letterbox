@@ -20,7 +20,6 @@ router.get('/signup', (req, res) => {
 // Handle login
 router.post('/login', async (req, res) => {
     try {
-        
         const { email, password } = req.body;
         console.log('Login attempt:', { email, password });
 
@@ -41,7 +40,7 @@ router.post('/login', async (req, res) => {
             },
             JWT_SECRET,
             { expiresIn: '1h' } // Token expires in 1 hours
-        );    
+        );
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
@@ -52,18 +51,30 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
-        console.log("user id is:" + user.user_id);
+        
         res.cookie('authToken', token, { httpOnly: false, secure: false });
-        // Redirect to home page
-        res.json({
-            success: true,
-            redirectUrl: '/dashboard',
-            user: {
-                id: user.id,
-                email: user.email,
-                username: user.username
-            }
-        });
+        if (user.is_admin === 1) {
+            res.json({
+                success: true,
+                redirectUrl: '/admin',
+                user: {
+                    id: user.user_id,
+                    email: user.email,
+                    username: user.username
+                }
+            });
+        } else {
+            res.json({
+                success: true,
+                redirectUrl: '/dashboard',
+                user: {
+                    id: user.user_id,
+                    email: user.email,
+                    username: user.username
+                }
+            });
+        }
+
     } catch (error) {
         console.error(error);
         res.render('login', { error: 'An error occurred' });

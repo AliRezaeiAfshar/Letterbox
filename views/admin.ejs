@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>پنل ادمین</title>
+    <!-- لود بوتسریپ RTL -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .sidebar {
+            background-color: #343a40;
+            color: #fff;
+            height: 100vh;
+            padding: 20px;
+        }
+        .sidebar a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            text-decoration: underline;
+        }
+        .content {
+            padding: 20px;
+        }
+        .table-actions button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <!-- نوار کناری (Sidebar) -->
+        <nav class="col-md-2 sidebar">
+            <h3 class="mb-4">پنل ادمین</h3>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#users">مدیریت کاربران</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#movies">مدیریت فیلم‌ها</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#add">افزودن کاربر/فیلم</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link" href="#comments">مدیریت کامنت‌ها و نقدها</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- محتوای اصلی -->
+        <main class="col-md-10 content">
+            <!-- مدیریت کاربران -->
+            <section id="users">
+                <h2 class="mb-4">مدیریت کاربران</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>نام کاربری</th>
+                        <th>ایمیل</th>
+                        <th>اقدامات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- نمونه یک ردیف کاربر -->
+                    <tr>
+                        <td>1</td>
+                        <td>کاربر1</td>
+                        <td>user1@example.com</td>
+                        <td class="table-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openUpdateUserModal(1, 'کاربر1', 'user1@example.com')">ویرایش</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser(1)">حذف</button>
+                        </td>
+                    </tr>
+                    <!-- ردیف‌های دیگر به صورت داینامیک اضافه شوند -->
+                    </tbody>
+                </table>
+            </section>
+
+            <hr>
+
+            <!-- مدیریت فیلم‌ها -->
+            <section id="movies">
+                <h2 class="mb-4">مدیریت فیلم‌ها</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>نام فیلم</th>
+                        <th>ژانر</th>
+                        <th>سال انتشار</th>
+                        <th>اقدامات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- نمونه یک ردیف فیلم -->
+                    <tr>
+                        <td>1</td>
+                        <td>فیلم نمونه</td>
+                        <td>اکشن</td>
+                        <td>2023</td>
+                        <td class="table-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openUpdateMovieModal(1, 'فیلم نمونه', 'اکشن', 2023)">ویرایش</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteMovie(1)">حذف</button>
+                        </td>
+                    </tr>
+                    <!-- ردیف‌های دیگر به صورت داینامیک اضافه شوند -->
+                    </tbody>
+                </table>
+            </section>
+
+            <hr>
+
+            <!-- افزودن کاربر/فیلم -->
+            <section id="add">
+                <h2 class="mb-4">افزودن کاربر/فیلم</h2>
+                <div class="row">
+                    <!-- فرم افزودن کاربر -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                افزودن کاربر جدید
+                            </div>
+                            <div class="card-body">
+                                <form id="addUserForm">
+                                    <div class="mb-3">
+                                        <label for="newUsername" class="form-label">نام کاربری</label>
+                                        <input type="text" class="form-control" id="newUsername" placeholder="نام کاربری">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newUserEmail" class="form-label">ایمیل</label>
+                                        <input type="email" class="form-control" id="newUserEmail" placeholder="ایمیل">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newUserPassword" class="form-label">رمز عبور</label>
+                                        <input type="password" class="form-control" id="newUserPassword" placeholder="رمز عبور">
+                                    </div>
+                                    <button type="button" class="btn btn-success" onclick="addUser()">افزودن کاربر</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- فرم افزودن فیلم -->
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                افزودن فیلم جدید
+                            </div>
+                            <div class="card-body">
+                                <form id="addMovieForm">
+                                    <div class="mb-3">
+                                        <label for="newMovieName" class="form-label">نام فیلم</label>
+                                        <input type="text" class="form-control" id="newMovieName" placeholder="نام فیلم">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newGenre" class="form-label">ژانر</label>
+                                        <input type="text" class="form-control" id="newGenre" placeholder="ژانر">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newReleaseYear" class="form-label">سال انتشار</label>
+                                        <input type="number" class="form-control" id="newReleaseYear" placeholder="سال انتشار">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="newPoster" class="form-label">آدرس تصویر فیلم</label>
+                                        <input type="text" class="form-control" id="newPoster" placeholder="آدرس تصویر">
+                                    </div>
+                                    <button type="button" class="btn btn-success" onclick="addMovie()">افزودن فیلم</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <hr>
+
+            <!-- مدیریت کامنت‌ها و نقدها -->
+            <section id="comments">
+                <h2 class="mb-4">مدیریت کامنت‌ها و نقدها</h2>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>شناسه</th>
+                        <th>کاربر</th>
+                        <th>فیلم</th>
+                        <th>نوع</th>
+                        <th>متن</th>
+                        <th>تاریخ</th>
+                        <th>اقدامات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- نمونه یک ردیف کامنت/نقد -->
+                    <tr>
+                        <td>1</td>
+                        <td>کاربر1</td>
+                        <td>فیلم نمونه</td>
+                        <td>کامنت</td>
+                        <td>این فیلم عالی بود!</td>
+                        <td>1402/01/15</td>
+                        <td class="table-actions">
+                            <button class="btn btn-warning btn-sm" onclick="openUpdateCommentModal(1, 'این فیلم عالی بود!')">ویرایش</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteComment(1)">حذف</button>
+                        </td>
+                    </tr>
+                    <!-- ردیف‌های دیگر به صورت داینامیک اضافه شوند -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</div>
+
+<!-- مودال‌های ویرایش (کاربر، فیلم و کامنت) -->
+<!-- مودال ویرایش کاربر -->
+<div class="modal fade" id="updateUserModal" tabindex="-1" aria-labelledby="updateUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="updateUserModalLabel" class="modal-title">ویرایش کاربر</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateUserForm">
+                    <input type="hidden" id="updateUserId">
+                    <div class="mb-3">
+                        <label for="updateUsername" class="form-label">نام کاربری</label>
+                        <input type="text" class="form-control" id="updateUsername">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateEmail" class="form-label">ایمیل</label>
+                        <input type="email" class="form-control" id="updateEmail">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" onclick="updateUser()">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ویرایش فیلم -->
+<div class="modal fade" id="updateMovieModal" tabindex="-1" aria-labelledby="updateMovieModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="updateMovieModalLabel" class="modal-title">ویرایش فیلم</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateMovieForm">
+                    <input type="hidden" id="updateMovieId">
+                    <div class="mb-3">
+                        <label for="updateMovieName" class="form-label">نام فیلم</label>
+                        <input type="text" class="form-control" id="updateMovieName">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateGenre" class="form-label">ژانر</label>
+                        <input type="text" class="form-control" id="updateGenre">
+                    </div>
+                    <div class="mb-3">
+                        <label for="updateReleaseYear" class="form-label">سال انتشار</label>
+                        <input type="number" class="form-control" id="updateReleaseYear">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" onclick="updateMovie()">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال ویرایش کامنت/نقد -->
+<div class="modal fade" id="updateCommentModal" tabindex="-1" aria-labelledby="updateCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="updateCommentModalLabel" class="modal-title">ویرایش کامنت/نقد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateCommentForm">
+                    <input type="hidden" id="updateCommentId">
+                    <div class="mb-3">
+                        <label for="updateCommentText" class="form-label">متن</label>
+                        <textarea class="form-control" id="updateCommentText" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                <button type="button" class="btn btn-primary" onclick="updateComment()">ذخیره تغییرات</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- اسکریپت‌های مربوط به عملکرد دکمه‌ها و مودال‌ها -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // توابع مدیریت کاربران
+    function openUpdateUserModal(id, username, email) {
+        document.getElementById('updateUserId').value = id;
+        document.getElementById('updateUsername').value = username;
+        document.getElementById('updateEmail').value = email;
+        new bootstrap.Modal(document.getElementById('updateUserModal')).show();
+    }
+    function updateUser() {
+        var id = document.getElementById('updateUserId').value;
+        var username = document.getElementById('updateUsername').value;
+        var email = document.getElementById('updateEmail').value;
+        console.log('به‌روزرسانی کاربر:', { id, username, email });
+        // درخواست AJAX جهت به‌روزرسانی کاربر
+        bootstrap.Modal.getInstance(document.getElementById('updateUserModal')).hide();
+    }
+    function deleteUser(id) {
+        console.log('حذف کاربر با شناسه:', id);
+        // ارسال درخواست حذف به سرور
+    }
+
+    // توابع مدیریت فیلم‌ها
+    function openUpdateMovieModal(id, movieName, genre, releaseYear) {
+        document.getElementById('updateMovieId').value = id;
+        document.getElementById('updateMovieName').value = movieName;
+        document.getElementById('updateGenre').value = genre;
+        document.getElementById('updateReleaseYear').value = releaseYear;
+        new bootstrap.Modal(document.getElementById('updateMovieModal')).show();
+    }
+    function updateMovie() {
+        var id = document.getElementById('updateMovieId').value;
+        var movieName = document.getElementById('updateMovieName').value;
+        var genre = document.getElementById('updateGenre').value;
+        var releaseYear = document.getElementById('updateReleaseYear').value;
+        console.log('به‌روزرسانی فیلم:', { id, movieName, genre, releaseYear });
+        // درخواست AJAX جهت به‌روزرسانی فیلم
+        bootstrap.Modal.getInstance(document.getElementById('updateMovieModal')).hide();
+    }
+    function deleteMovie(id) {
+        console.log('حذف فیلم با شناسه:', id);
+        // ارسال درخواست حذف به سرور
+    }
+
+    // توابع افزودن کاربر و فیلم
+    function addUser() {
+        var username = document.getElementById('newUsername').value;
+        var email = document.getElementById('newUserEmail').value;
+        var password = document.getElementById('newUserPassword').value;
+        console.log('افزودن کاربر:', { username, email, password });
+        // درخواست AJAX جهت افزودن کاربر
+        document.getElementById('addUserForm').reset();
+    }
+    function addMovie() {
+        var movieName = document.getElementById('newMovieName').value;
+        var genre = document.getElementById('newGenre').value;
+        var releaseYear = document.getElementById('newReleaseYear').value;
+        var poster = document.getElementById('newPoster').value;
+        console.log('افزودن فیلم:', { movieName, genre, releaseYear, poster });
+        // درخواست AJAX جهت افزودن فیلم
+        document.getElementById('addMovieForm').reset();
+    }
+
+    // توابع مدیریت کامنت‌ها و نقدها
+    function openUpdateCommentModal(id, commentText) {
+        document.getElementById('updateCommentId').value = id;
+        document.getElementById('updateCommentText').value = commentText;
+        new bootstrap.Modal(document.getElementById('updateCommentModal')).show();
+    }
+    function updateComment() {
+        var id = document.getElementById('updateCommentId').value;
+        var commentText = document.getElementById('updateCommentText').value;
+        console.log('به‌روزرسانی کامنت/نقد:', { id, commentText });
+        // درخواست AJAX جهت به‌روزرسانی کامنت/نقد
+        bootstrap.Modal.getInstance(document.getElementById('updateCommentModal')).hide();
+    }
+    function deleteComment(id) {
+        console.log('حذف کامنت/نقد با شناسه:', id);
+        // ارسال درخواست حذف به سرور
+    }
+</script>
+</body>
+</html>

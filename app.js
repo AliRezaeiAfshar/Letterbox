@@ -4,35 +4,57 @@ const authRouter = require('./routes/auth');
 const moviesRouter = require('./routes/movies');
 const apiRouter = require('./routes/api');
 const cookieParser = require('cookie-parser');
+const userRouter = require('./routes/user');
 
-// Next initialize the application
 const app = express();
 
 // Use cookie-parser middleware
 app.use(cookieParser());
 app.use(express.json());
-
-// Middleware for parsing URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 
-// routing path
+// Middleware to check if the user is authenticated
+function isAuthenticated(req, res, next) {
+  const token = req.cookies.authToken;
+  if (token) {
+    next();
+  } else {
+    // If no token is found, redirect the user to the login page
+    res.redirect('/auth/login');
+  }
+}
+
+// Root route: redirect to dashboard if logged in; otherwise, redirect to login page
 app.get('/', (req, res) => {
+<<<<<<< HEAD
   res.render("login")
+=======
+  const token = req.cookies.authToken;
+  if (token) {
+    res.redirect('/dashboard');
+  } else {
+    res.redirect('/auth/login');
+  }
+>>>>>>> 5c6c38036baec1e862e043bc914d9d947678a301
 });
 
-app.get('/dashboard', (req, res) => {
-  const token = req.cookies.authToken; // Read the token from cookies
-  if (!token) {
-    return res.status(401).send('Unauthorized: No token provided');
-  }
-  res.render('dashboard', { token });
+// Protected route: dashboard (only accessible if logged in)
+app.get('/dashboard', isAuthenticated, (req, res) => {
+  res.render('dashboard', { token: req.cookies.authToken });
 });
+
+// Protected route: admin (only accessible if logged in)
+app.get('/admin', isAuthenticated, (req, res) => {
+  res.render('admin', { token: req.cookies.authToken });
+});
+
+// Use other routers
 app.use('/movies', moviesRouter);
-// Add this line with your other route uses
+app.use('/user', userRouter);
 app.use('/auth', authRouter);
 app.use('/api', apiRouter);
 
