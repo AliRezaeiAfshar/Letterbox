@@ -1,5 +1,5 @@
 const sequelize = require('./index');
-const { User, Movie, Relationship, Friend } = require('./associations');
+const { User, Movie, Relationship, Friend, Comment, Review } = require('./associations');
 
 (async () => {
     try {

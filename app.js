@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const authRouter = require('./routes/auth');
 const moviesRouter = require('./routes/movies');
+const apiRouter = require('./routes/api');
 const cookieParser = require('cookie-parser');
 
 // Next initialize the application
@@ -20,7 +21,7 @@ app.use(express.static('public'));
 
 // routing path
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.render("login")
 });
 
 app.get('/dashboard', (req, res) => {
@@ -33,6 +34,7 @@ app.get('/dashboard', (req, res) => {
 app.use('/movies', moviesRouter);
 // Add this line with your other route uses
 app.use('/auth', authRouter);
+app.use('/api', apiRouter);
 
 // Start the server
 app.listen(3000, () => {

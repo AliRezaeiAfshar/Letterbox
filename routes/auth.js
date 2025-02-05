@@ -26,15 +26,17 @@ router.post('/login', async (req, res) => {
 
         // Check if user exists
         const [users] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+        console.log('Query result:', users);
         
         if (users.length === 0) {
             return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
 
         const user = users[0];
+        console.log('User object:', user);
         const token = jwt.sign(
             { 
-                userId: user._id,
+                userId: user.user_id,
                 email: user.email
             },
             JWT_SECRET,
@@ -50,18 +52,18 @@ router.post('/login', async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
-        res.cookie('authToken', token, { httpOnly: true, secure: true });
+        console.log("user id is:" + user.user_id);
+        res.cookie('authToken', token, { httpOnly: false, secure: false });
         // Redirect to home page
         res.json({
             success: true,
             redirectUrl: '/dashboard',
             user: {
-                id: user._id,
+                id: user.id,
                 email: user.email,
                 username: user.username
             }
         });
-
     } catch (error) {
         console.error(error);
         res.render('login', { error: 'An error occurred' });
