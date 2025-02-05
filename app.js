@@ -30,8 +30,22 @@ app.get('/dashboard', (req, res) => {
   }
   res.render('dashboard', { token });
 });
+
+
+app.get('/admin', (req, res) => {
+  const token = req.cookies.authToken; // Read the token from cookies
+  if (!token) {
+    return res.status(401).send('Unauthorized: No token provided');
+  }
+  res.render('admin', { token });
+});
+
+
 app.use('/movies', moviesRouter);
+
+
 // Add this line with your other route uses
+
 app.use('/auth', authRouter);
 
 // Start the server
