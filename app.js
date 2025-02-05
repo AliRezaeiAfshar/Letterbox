@@ -16,14 +16,14 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
 
 // routing path
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.get('/dashboard',(req, res) => {
+app.get('/dashboard', (req, res) => {
   const token = req.cookies.authToken; // Read the token from cookies
   if (!token) {
     return res.status(401).send('Unauthorized: No token provided');

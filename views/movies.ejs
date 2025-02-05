@@ -14,7 +14,7 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         .movie-title {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 10px;
             height: 2.4rem;
@@ -33,6 +33,16 @@
         }
         .movie-info {
             margin-bottom: 15px;
+        }
+        .movie-poster {
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 1px solid #ddd;
+        }
+        .avg-rating {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffc107;
         }
     </style>
 </head>
@@ -58,17 +68,37 @@
                 <% movies.forEach(movie => { %>
                     <div class="col movie-item">
                         <div class="card">
+                            <!-- Movie Poster -->
+                            <% if (movie.poster) { %>
+                                <img src="<%= movie.poster %>" alt="<%= movie.poster %>" class="movie-poster">
+                                <% console.log(movie.poster) %>
+                            <% } else { %>
+                                <img src="https://via.placeholder.com/300x300?text=No+Image" alt="No Poster" class="movie-poster">
+                            <% } %>
                             <div class="card-body">
+                                <!-- Movie Title -->
                                 <h5 class="movie-title"><%= movie.name %></h5>
+                                
+                                <!-- Movie Details -->
                                 <div class="movie-info">
-                                    <p class="mb-1">
-                                        <i class="fas fa-user me-2"></i>
-                                        <strong>Creator:</strong> <%= movie.creator %>
-                                    </p>
-                                    <p class="mb-1">
-                                        <i class="fas fa-calendar me-2"></i>
-                                        <strong>Date:</strong> <%= new Date(movie.date).toLocaleDateString() %>
-                                    </p>
+                                    <% if (movie.genre) { %>
+                                        <p class="mb-1">
+                                            <i class="fas fa-film me-2"></i>
+                                            <strong>Genre:</strong> <%= movie.genre %>
+                                        </p>
+                                    <% } %>
+                                    <% if (movie.release_year) { %>
+                                        <p class="mb-1">
+                                            <i class="fas fa-calendar-alt me-2"></i>
+                                            <strong>Release Year:</strong> <%= movie.release_year %>
+                                        </p>
+                                    <% } %>
+                                    <% if (movie.avg_rating) { %>
+                                        <p class="mb-1 avg-rating">
+                                            <i class="fas fa-star me-2"></i>
+                                            <strong>Rating:</strong> <%= movie.avg_rating %> / 5
+                                        </p>
+                                    <% } %>
                                 </div>
                                 
                                 <!-- Buttons -->
@@ -166,9 +196,9 @@
             
             Array.from(movies).forEach(movie => {
                 const title = movie.querySelector('.movie-title').textContent.toLowerCase();
-                const creator = movie.querySelector('.movie-info').textContent.toLowerCase();
+                const details = movie.querySelector('.movie-info').textContent.toLowerCase();
                 
-                if (title.includes(searchText) || creator.includes(searchText)) {
+                if (title.includes(searchText) || details.includes(searchText)) {
                     movie.style.display = '';
                 } else {
                     movie.style.display = 'none';
@@ -195,10 +225,8 @@
             const rating = document.getElementById('ratingSelect').value;
             const review = document.getElementById('reviewText').value;
             
-            // Here you would typically send this data to your server
             console.log('Review submitted:', { movieName, rating, review });
             
-            // Clear form and close modal
             document.getElementById('reviewForm').reset();
             reviewModal.hide();
         }
@@ -207,10 +235,8 @@
             const movieName = document.getElementById('commentMovieName').value;
             const comment = document.getElementById('commentText').value;
             
-            // Here you would typically send this data to your server
             console.log('Comment submitted:', { movieName, comment });
             
-            // Clear form and close modal
             document.getElementById('commentForm').reset();
             commentModal.hide();
         }

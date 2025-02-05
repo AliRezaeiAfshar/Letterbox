@@ -5,6 +5,7 @@ const db = require('../config/database');
 const jwt = require('jsonwebtoken');
 const authenticateToken = require('../middlewares/auth');
 const JWT_SECRET = 'your-secret-key';
+const User = require('../models/User');
 
 // Show login page
 router.get('/login', (req, res) => {
@@ -19,13 +20,15 @@ router.get('/signup', (req, res) => {
 // Handle login
 router.post('/login', async (req, res) => {
     try {
+        
         const { email, password } = req.body;
+        console.log('Login attempt:', { email, password });
 
         // Check if user exists
-        const [users] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+        const [users] = await db.query('SELECT * FROM user WHERE email = ?', [email]);
         
         if (users.length === 0) {
-            return res.render('login', { error: 'Invalid email or password' });
+            return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
 
         const user = users[0];
@@ -40,15 +43,17 @@ router.post('/login', async (req, res) => {
 
         // Check password
         const isMatch = await bcrypt.compare(password, user.password);
+        console.log('Password match:', isMatch);
+
+        console.log('Token generated:', token);
         
         if (!isMatch) {
-            return res.render('login', { error: 'Invalid email or password' });
+            return res.status(401).json({ success: false, error: 'Invalid email or password' });
         }
         res.cookie('authToken', token, { httpOnly: true, secure: true });
         // Redirect to home page
         res.json({
             success: true,
-            token,
             redirectUrl: '/dashboard',
             user: {
                 id: user._id,
@@ -71,7 +76,7 @@ router.post('/signup', async (req, res) => {
 
         // Check if user already exists
         const [existingUsers] = await db.query(
-            'SELECT * FROM users WHERE email = ? OR username = ?',
+            'SELECT * FROM user WHERE email = ? OR username = ?',
             [email, username]
         );
 
@@ -83,10 +88,15 @@ router.post('/signup', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Insert new user
-        await db.query(
-            'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
-            [username, email, hashedPassword]
-        );
+        (async () => {
+            const newUser = await User.create({
+                username: username,
+                email: email,
+                password: hashedPassword,
+                is_admin: false,
+            });
+            console.log('User created:', newUser.toJSON());
+        })();
 
         res.redirect('/auth/login');
 

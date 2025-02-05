@@ -7,7 +7,7 @@ const pool = require('../config/database'); // Your database connection
 router.get('/', auth, async (req, res) => {
     try {
         const [rows] = await pool.query(
-            'SELECT name, creator, date FROM movies ORDER BY date DESC'
+            'SELECT name, genre, release_year, poster FROM movie ORDER BY release_year DESC'
         );
         res.render("movies", { movies: rows });
     } catch (error) {
