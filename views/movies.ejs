@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movies List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .card {
+            height: 100%;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .movie-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            height: 2.4rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .btn-group {
+            width: 100%;
+            margin-top: auto;
+        }
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .movie-info {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4 text-center">Movies List</h1>
+        
+        <!-- Search Box -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search movies...">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Movies Grid -->
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="moviesList">
+            <% if (movies && movies.length > 0) { %>
+                <% movies.forEach(movie => { %>
+                    <div class="col movie-item">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="movie-title"><%= movie.name %></h5>
+                                <div class="movie-info">
+                                    <p class="mb-1">
+                                        <i class="fas fa-user me-2"></i>
+                                        <strong>Creator:</strong> <%= movie.creator %>
+                                    </p>
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <strong>Date:</strong> <%= new Date(movie.date).toLocaleDateString() %>
+                                    </p>
+                                </div>
+                                
+                                <!-- Buttons -->
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" onclick="openReviewModal('<%= movie.name %>')">
+                                        <i class="fas fa-star me-1"></i> Review
+                                    </button>
+                                    <button class="btn btn-secondary" onclick="openCommentModal('<%= movie.name %>')">
+                                        <i class="fas fa-comment me-1"></i> Comment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No movies found
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Review Movie</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reviewForm">
+                        <input type="hidden" id="movieName">
+                        <div class="mb-3">
+                            <label class="form-label">Rating</label>
+                            <div class="rating">
+                                <select class="form-select" id="ratingSelect">
+                                    <option value="5">5 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="1">1 Star</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Review</label>
+                            <textarea class="form-control" id="reviewText" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitReview()">Submit Review</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Comment</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="commentForm">
+                        <input type="hidden" id="commentMovieName">
+                        <div class="mb-3">
+                            <label class="form-label">Your Comment</label>
+                            <textarea class="form-control" id="commentText" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="submitComment()">Submit Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchText = this.value.toLowerCase();
+            const movies = document.getElementsByClassName('movie-item');
+            
+            Array.from(movies).forEach(movie => {
+                const title = movie.querySelector('.movie-title').textContent.toLowerCase();
+                const creator = movie.querySelector('.movie-info').textContent.toLowerCase();
+                
+                if (title.includes(searchText) || creator.includes(searchText)) {
+                    movie.style.display = '';
+                } else {
+                    movie.style.display = 'none';
+                }
+            });
+        });
+
+        // Modal handling
+        const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+        const commentModal = new bootstrap.Modal(document.getElementById('commentModal'));
+
+        function openReviewModal(movieName) {
+            document.getElementById('movieName').value = movieName;
+            reviewModal.show();
+        }
+
+        function openCommentModal(movieName) {
+            document.getElementById('commentMovieName').value = movieName;
+            commentModal.show();
+        }
+
+        function submitReview() {
+            const movieName = document.getElementById('movieName').value;
+            const rating = document.getElementById('ratingSelect').value;
+            const review = document.getElementById('reviewText').value;
+            
+            // Here you would typically send this data to your server
+            console.log('Review submitted:', { movieName, rating, review });
+            
+            // Clear form and close modal
+            document.getElementById('reviewForm').reset();
+            reviewModal.hide();
+        }
+
+        function submitComment() {
+            const movieName = document.getElementById('commentMovieName').value;
+            const comment = document.getElementById('commentText').value;
+            
+            // Here you would typically send this data to your server
+            console.log('Comment submitted:', { movieName, comment });
+            
+            // Clear form and close modal
+            document.getElementById('commentForm').reset();
+            commentModal.hide();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Sign Up</h2>
+        <form id="checkForm">
+            <button type="submit">Sign Up</button>
+        </form>
+        <p class="switch-form">
+            Already have an account? <a href="/auth/login">Login</a>
+        </p>
+        <% if (locals.error) { %>
+            <div class="error-message"><%= error %></div>
+        <% } %>
+    </div>
+    <script>
+        document.getElementById('checkForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const token = "<%= token %>";
+            try {
+                const response = await fetch('/movies', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                });
+                if (response.ok) {
+                    window.location.href = "/movies";
+                } else {
+                    alert('Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during login');
+            }
+        });
+        </script>
+</body>
+</html>
