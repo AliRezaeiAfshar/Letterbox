@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
             console.log('Fuck u2');
             res.json({
                 success: true,
-                redirectUrl: '/dashboard',
+                redirectUrl: '/user',
                 user: {
                     id: user.user_id,
                     email: user.email,
