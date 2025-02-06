@@ -25,7 +25,7 @@
         }
         .btn-group {
             width: 100%;
-            margin-top: auto;
+            margin-top: 0;
         }
         .card-body {
             display: flex;
@@ -226,20 +226,32 @@
     <script>
         // Search functionality
         document.getElementById('searchInput').addEventListener('keyup', function() {
-            const searchText = this.value.toLowerCase();
-            const movies = document.getElementsByClassName('movie-item');
-            
-            Array.from(movies).forEach(movie => {
-                const title = movie.querySelector('.movie-title').textContent.toLowerCase();
-                const details = movie.querySelector('.movie-info').textContent.toLowerCase();
-                
-                if (title.includes(searchText) || details.includes(searchText)) {
-                    movie.style.display = '';
-                } else {
-                    movie.style.display = 'none';
-                }
-            });
-        });
+    const searchText = this.value.toLowerCase();
+    const movies = document.getElementsByClassName('movie-item');
+    
+    Array.from(movies).forEach(movie => {
+        // Get text content from each element you want to filter
+        const title = movie.querySelector('.movie-title') ? movie.querySelector('.movie-title').textContent.toLowerCase() : '';
+        const details = movie.querySelector('.movie-info') ? movie.querySelector('.movie-info').textContent.toLowerCase() : '';
+        const genre = movie.querySelector('.movie-genre') ? movie.querySelector('.movie-genre').textContent.toLowerCase() : '';
+        const releaseYear = movie.querySelector('.movie-year') ? movie.querySelector('.movie-year').textContent.toLowerCase() : '';
+        const rate = movie.querySelector('.movie-rate') ? movie.querySelector('.movie-rate').textContent.toLowerCase() : '';
+        
+        // Check if the search text is included in any of the fields
+        if (
+            title.includes(searchText) ||
+            details.includes(searchText) ||
+            genre.includes(searchText) ||
+            releaseYear.includes(searchText) ||
+            rate.includes(searchText)
+        ) {
+            movie.style.display = '';
+        } else {
+            movie.style.display = 'none';
+        }
+    });
+});
+
 
         // Modal handling
         const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
@@ -276,6 +288,7 @@
                     alert('Review submitted successfully');
                     document.getElementById('reviewForm').reset();
                     reviewModal.hide();
+                    window.location.reload();
                 } else {
                     alert(data.message || 'Failed to submit review');
                 }
@@ -306,6 +319,7 @@
                     alert('Comment submitted successfully');
                     document.getElementById('commentForm').reset();
                     commentModal.hide();
+                    window.location.reload();
                 } else {
                     alert(data.message || 'Failed to submit comment');
                 }

@@ -54,6 +54,7 @@ router.post('/login', async (req, res) => {
         
         res.cookie('authToken', token, { httpOnly: false, secure: false });
         if (user.is_admin === 1) {
+            console.log('Fuck u1');
             res.json({
                 success: true,
                 redirectUrl: '/admin',
@@ -64,6 +65,7 @@ router.post('/login', async (req, res) => {
                 }
             });
         } else {
+            console.log('Fuck u2');
             res.json({
                 success: true,
                 redirectUrl: '/dashboard',

@@ -3,145 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>پروفایل کاربر</title>
-    <!-- لود بوتسریپ به همراه نسخه RTL -->
+    <title>صفحه کاربری</title>
+    <!-- بارگذاری Bootstrap برای زبان‌های راست به چپ -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <!-- اضافه کردن فونت فارسی (اختیاری) -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazir&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f5f5;
-        }
-        .profile-card {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #fdfbfb, #ebedee);
+            margin: 0;
             padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            padding: 20px;
+        }
+        .card h2 {
             margin-bottom: 20px;
-        }
-        .friends-list {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 20px;
+            color: #333;
         }
         .friend-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
         }
         .friend-item:last-child {
             border-bottom: none;
         }
+        .friend-item:hover {
+            background-color: #f9f9f9;
+        }
+        .btn-custom {
+            border-radius: 20px;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
-<div class="container mt-5">
-    <!-- بخش پروفایل کاربر -->
-    <div class="profile-card">
-        <h2 class="mb-3">پروفایل کاربر</h2>
-        <p><strong>نام کاربری:</strong> <span id="displayUsername">کاربرنمونه</span></p>
-        <p><strong>ایمیل:</strong> <span id="displayEmail">user@example.com</span></p>
-        <button class="btn btn-primary" onclick="openEditProfileModal()">ویرایش اطلاعات کاربری</button>
+<div class="container">
+    <!-- پروفایل کاربری -->
+    <div class="card">
+        <h2>پروفایل کاربری</h2>
+        <p><strong>نام کاربری:</strong> <span id="displayUsername"><%= user.username %></span></p>
+        <p><strong>ایمیل:</strong> <span id="displayEmail"><%= user.email %></span></p>
+        <button class="btn btn-primary btn-custom" onclick="openEditProfileModal()">ویرایش پروفایل</button>
     </div>
 
-    <!-- بخش لیست دوستان -->
-    <div class="friends-list">
-        <h2 class="mb-3">لیست دوستان</h2>
-        <!-- فرم افزودن دوست -->
+    <!-- لیست دوستان -->
+    <div class="card">
+        <h2>لیست دوستان</h2>
         <div class="input-group mb-3">
-            <input type="text" class="form-control" id="newFriendUsername" placeholder="نام کاربری دوست">
-            <button class="btn btn-success" type="button" onclick="addFriend()">افزودن دوست</button>
+            <input type="text" class="form-control" id="newFriendUsername" placeholder="نام کاربر دوست">
+            <button class="btn btn-success btn-custom" type="button" onclick="addFriend()">افزودن دوست</button>
         </div>
-        <!-- نمایش لیست دوستان -->
         <div id="friendsContainer">
-            <!-- نمونه یک دوست -->
-            <div class="friend-item">
-                <span>دوست1</span>
-                <button class="btn btn-danger btn-sm" onclick="deleteFriend('دوست1')">حذف</button>
+            <!-- مثال یک دوست -->
+            <div class="friend-item" style="display: none;">
+                <button class="btn btn-danger btn-sm btn-custom" onclick="deleteFriend('دوست نمونه')">حذف</button>
             </div>
-            <!-- دوستان دیگر به صورت داینامیک اضافه خواهند شد -->
         </div>
+    </div>
+
+    <!-- بخش فیلم‌ها -->
+    <div class="card form-container">
+        <h2>فیلم‌ها</h2>
+        <form id="checkForm">
+            <button type="submit" class="btn btn-info btn-custom">مشاهده فیلم‌ها</button>
+        </form>
+        <% if (locals.error) { %>
+            <div class="alert alert-danger mt-3"><%= error %></div>
+        <% } %>
     </div>
 </div>
 
-<!-- مودال ویرایش اطلاعات کاربری -->
+<!-- مدال ویرایش پروفایل -->
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 id="editProfileModalLabel" class="modal-title">ویرایش اطلاعات کاربری</h5>
+                <h5 id="editProfileModalLabel" class="modal-title">ویرایش پروفایل</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
             </div>
             <div class="modal-body">
                 <form id="editProfileForm">
                     <div class="mb-3">
                         <label for="editUsername" class="form-label">نام کاربری</label>
-                        <input type="text" class="form-control" id="editUsername" value="کاربرنمونه">
+                        <input type="text" class="form-control" id="editUsername" value="">
                     </div>
                     <div class="mb-3">
                         <label for="editEmail" class="form-label">ایمیل</label>
-                        <input type="email" class="form-control" id="editEmail" value="user@example.com">
+                        <input type="email" class="form-control" id="editEmail" value="">
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
-                <button type="button" class="btn btn-primary" onclick="saveProfileChanges()">ذخیره تغییرات</button>
+                <button type="button" class="btn btn-primary btn-custom" onclick="saveProfileChanges()">ذخیره تغییرات</button>
+                <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">انصراف</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- اسکریپت‌های مربوط به بوتسریپ و عملکرد دکمه‌ها -->
+<!-- بارگذاری اسکریپت‌های Bootstrap -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // باز کردن مودال ویرایش پروفایل
+    // ایجاد نمونه مدال
+    const editProfileModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+    
     function openEditProfileModal() {
-        var editProfileModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+        // پیش‌فرض‌ها را در فرم مدال قرار می‌دهیم
+        document.getElementById('editUsername').value = document.getElementById('displayUsername').textContent;
+        document.getElementById('editEmail').value = document.getElementById('displayEmail').textContent;
         editProfileModal.show();
     }
 
-    // ذخیره تغییرات پروفایل
     function saveProfileChanges() {
-        var newUsername = document.getElementById('editUsername').value;
-        var newEmail = document.getElementById('editEmail').value;
+        const newUsername = document.getElementById('editUsername').value;
+        const newEmail = document.getElementById('editEmail').value;
         document.getElementById('displayUsername').textContent = newUsername;
         document.getElementById('displayEmail').textContent = newEmail;
-        // در اینجا می‌توانید درخواست AJAX جهت ذخیره تغییرات به سرور ارسال کنید
-        bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+        const token = document.cookie.split('; ').find(row => row.startsWith('authToken=')).split('=')[1];
+
+        fetch('/api/change', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ newEmail, newUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('تغییرات با موفقیت ذخیره شد');
+                editProfileModal.hide();
+            } else {
+                alert(data.message || 'ذخیره تغییرات با خطا مواجه شد');
+            }
+        })
+        .catch(err => {
+            console.error('خطا:', err);
+            alert('خطایی رخ داده است');
+        });
     }
 
-    // افزودن دوست به لیست
     function addFriend() {
-        var friendUsername = document.getElementById('newFriendUsername').value.trim();
+        const friendUsername = document.getElementById('newFriendUsername').value.trim();
         if (!friendUsername) {
-            alert('لطفاً نام کاربری دوست را وارد کنید.');
+            alert('نام کاربری دوست را وارد کنید!');
             return;
         }
-        // ایجاد یک المان جدید برای دوست افزوده شده
-        var friendItem = document.createElement('div');
-        friendItem.className = 'friend-item';
-        friendItem.innerHTML = '<span>' + friendUsername + '</span>' +
-            '<button class="btn btn-danger btn-sm" onclick="deleteFriend(\'' + friendUsername + '\')">حذف</button>';
-        document.getElementById('friendsContainer').appendChild(friendItem);
-        document.getElementById('newFriendUsername').value = '';
-        // در اینجا می‌توانید درخواست AJAX جهت افزودن دوست به سرور ارسال کنید
-    }
+        const token = document.cookie.split('; ').find(row => row.startsWith('authToken=')).split('=')[1];
+        fetch('/api/add-friend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ friendUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('دوست با موفقیت اضافه شد');
+                const friendItem = document.createElement('div');
+                friendItem.className = 'friend-item';
+                friendItem.innerHTML = '<span>' + friendUsername + '</span>' +
+                '<button class="btn btn-danger btn-sm btn-custom" onclick="deleteFriend(\'' + friendUsername + '\')">حذف</button>';
+                document.getElementById('friendsContainer').appendChild(friendItem);
+                document.getElementById('newFriendUsername').value = '';
 
-    // حذف دوست از لیست
+                const seeHistory = document.createElement('div');
+                '<button class="btn btn-danger btn-sm btn-custom" onclick="deleteFriend(\'' + friendUsername + '\')">مشاهده نظرها و نقدها</button>';
+                document.getElementById('friendsContainer').appendChild(seeHistory);
+                document.getElementById('newFriendUsername').value = '';
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => {
+            console.error('خطا:', err);
+            alert('خطایی رخ داده است');
+        });
+
+        }
+
     function deleteFriend(friendUsername) {
-        var friendsContainer = document.getElementById('friendsContainer');
-        var friendItems = friendsContainer.getElementsByClassName('friend-item');
-        for (var i = 0; i < friendItems.length; i++) {
-            if (friendItems[i].textContent.indexOf(friendUsername) !== -1) {
+        const friendsContainer = document.getElementById('friendsContainer');
+        const friendItems = friendsContainer.getElementsByClassName('friend-item');
+        const token = document.cookie.split('; ').find(row => row.startsWith('authToken=')).split('=')[1];
+        fetch('/api/delete-friend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ friendUsername })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('دوست با موفقیت حذف شد');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(err => {
+            console.error('خطا:', err);
+            alert('خطایی رخ داده است');
+        });
+        for (let i = 0; i < friendItems.length; i++) {
+            if (friendItems[i].textContent.includes(friendUsername)) {
                 friendsContainer.removeChild(friendItems[i]);
                 break;
             }
         }
-        // در اینجا می‌توانید درخواست AJAX جهت حذف دوست از سرور ارسال کنید
     }
+
+    document.getElementById('checkForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const token = document.cookie.split('; ').find(row => row.startsWith('authToken=')).split('=')[1];
+        try {
+            const response = await fetch('/movies', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+            if (response.ok) {
+                window.location.href = "/movies";
+            } else {
+                alert('مشکلی در ورود به بخش فیلم‌ها پیش آمد');
+            }
+        } catch (error) {
+            console.error('خطا:', error);
+            alert('خطایی در برقراری ارتباط رخ داده است');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', loadFriends);
+    function loadFriends() {
+        const token = document.cookie.split('; ').find(row => row.startsWith('authToken=')).split('=')[1];
+
+        fetch('/api/friends', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const friendsContainer = document.getElementById('friendsContainer');
+                friendsContainer.innerHTML = ''; // Clear old content
+
+                data.allFriends.forEach(friend => {
+                const friendItem = document.createElement('div');
+                friendItem.className = 'friend-item';
+                friendItem.innerHTML = `
+                    <span>${friend.username}</span>
+                    <button class="btn btn-danger btn-sm btn-custom" onclick="deleteFriend('${friend.username}')">حذف</button>
+                `;
+                friendsContainer.appendChild(friendItem);
+            });
+            } else {
+                console.error('Failed to load friends:', data.message);
+            }
+        })
+        .catch(err => console.error('Error fetching friends:', err));
+    }
+
 </script>
 </body>
 </html>
+
+
+

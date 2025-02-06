@@ -24,9 +24,16 @@ Comment.belongsTo(Movie, { foreignKey: 'movieId', as: 'Movie' });
 // User has a self-referencing many-to-many relationship through Friend
 User.belongsToMany(User, {
     through: Friend,
-    as: 'Friends',
+    as: 'Friendships',  // Alias for clarity
     foreignKey: 'user_id1',
     otherKey: 'user_id2',
+});
+
+User.belongsToMany(User, {
+    through: Friend,
+    as: 'FriendOf',  // Inverse alias
+    foreignKey: 'user_id2',
+    otherKey: 'user_id1',
 });
 
 module.exports = { User, Movie, Relationship, Friend, Review, Comment };
